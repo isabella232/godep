@@ -21,8 +21,7 @@ If -t is given, dependencies of test files are also downloaded and installed.
 
 For more about specifying packages, see 'go help packages'.
 `,
-	Run:          runGet,
-	OnlyInGOPATH: true,
+	Run: runGet,
 }
 
 var getT bool

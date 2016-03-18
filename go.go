@@ -21,8 +21,7 @@ Any go tool command can run this way, but "godep go get"
 is unnecessary and has been disabled. Instead, use
 "godep go install".
 `,
-	Run:          runGo,
-	OnlyInGOPATH: true,
+	Run: runGo,
 }
 
 // Find the godep GOPATH for this file tree and run the go tool.

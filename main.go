@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"go/build"
 	"io"
 	"log"
 	"os"
@@ -44,9 +43,6 @@ type Command struct {
 
 	// Flag is a set of flags specific to this command.
 	Flag flag.FlagSet
-
-	// OnlyInGOPATH limits this command to being run only while inside of a GOPATH
-	OnlyInGOPATH bool
 }
 
 // UsageExit prints usage information and exits.
@@ -114,17 +110,14 @@ func main() {
 		log.Fatal(err)
 	}
 
+	VendorExperiment = determineVendor(majorGoVersion)
+
+	// sep is the signature set of path elements that
+	// precede the original path of an imported package.
+	sep = defaultSep(VendorExperiment)
+
 	for _, cmd := range commands {
 		if cmd.Name == args[0] {
-			if cmd.OnlyInGOPATH {
-				checkInGOPATH()
-			}
-
-			VendorExperiment = determineVendor(majorGoVersion)
-			// sep is the signature set of path elements that
-			// precede the original path of an imported package.
-			sep = defaultSep(VendorExperiment)
-
 			cmd.Flag.BoolVar(&verbose, "v", false, "enable verbose output")
 			cmd.Flag.BoolVar(&debug, "d", false, "enable debug output")
 			cmd.Flag.StringVar(&cpuprofile, "cpuprofile", "", "Write cpu profile to this file")
@@ -152,33 +145,6 @@ func main() {
 	fmt.Fprintf(os.Stderr, "godep: unknown command %q\n", args[0])
 	fmt.Fprintf(os.Stderr, "Run 'godep help' for usage.\n")
 	os.Exit(2)
-}
-
-func subPath(sub, path string) bool {
-	ls := strings.ToLower(sub)
-	lp := strings.ToLower(path)
-	if ls == lp {
-		return false
-	}
-	return strings.HasPrefix(ls, lp)
-}
-
-func checkInGOPATH() {
-	pwd, err := os.Getwd()
-	if err != nil {
-		log.Fatal("Unable to determine current working directory", err)
-	}
-	dirs := build.Default.SrcDirs()
-	for _, p := range dirs {
-		if ok := subPath(pwd, p); ok {
-			return
-		}
-	}
-
-	log.Println("godep should only be used inside a valid go package directory.")
-	log.Println("You are probably outside of your $GOPATH.")
-	log.Printf("\tCurrent Directory: %s\n", pwd)
-	log.Fatalf("\t$GOPATH: %s\n", os.Getenv("GOPATH"))
 }
 
 var usageTemplate = `

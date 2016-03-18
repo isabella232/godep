@@ -58,8 +58,7 @@ also saved.
 
 For more about specifying packages, see 'go help packages'.
 `,
-	Run:          runSave,
-	OnlyInGOPATH: true,
+	Run: runSave,
 }
 
 var (

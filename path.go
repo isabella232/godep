@@ -17,8 +17,7 @@ the environment.
 
 For more about how GOPATH works, see 'go help gopath'.
 `,
-	Run:          runPath,
-	OnlyInGOPATH: true,
+	Run: runPath,
 }
 
 // Print the gopath that points to

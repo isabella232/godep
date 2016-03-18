@@ -17,8 +17,7 @@ var cmdRestore = &Command{
 Restore checks out the Godeps-specified version of each package in GOPATH.
 
 `,
-	Run:          runRestore,
-	OnlyInGOPATH: true,
+	Run: runRestore,
 }
 
 // Three phases:
